@@ -1,0 +1,28 @@
+version: "1.1"
+name: Get all Courses
+env:
+  host: localhost:3000
+  email: kimangkheang@cadt.com
+  password: "12345678"
+tests:
+  books:
+    steps:
+      - name: Login
+        http:
+          url: http://${{env.host}}/v1/auth/login
+          method: POST
+          check:
+            status: /^20/
+          json:
+            email: ${{env.email}}
+            password: ${{env.password}}
+          captures:
+            accessToken:
+              jsonpath: $.accessToken
+      - name: Get all courses
+        http:
+          url: http://${{env.host}}/v1/courses
+          method: GET
+          auth:
+            bearer:
+              token: ${{captures.accessToken}}

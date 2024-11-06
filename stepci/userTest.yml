@@ -1,0 +1,94 @@
+version: "1.1"
+name: Users
+env:
+  host: "localhost:3000"
+tests:
+  users:
+    steps:
+      - name: Invalid User Creation
+        http:
+          url: "http://${{env.host}}/v1/auth/sign-up"
+          method: POST
+          check:
+            status: /^4/
+          json:
+            firstname: "${{ | naughtystring  }}"
+            lastname: "${{ | naughtystring  }}"
+            email: "${{ internet.email | fake }}"
+            password: "12345678"
+            confirmPassword: "12345678"
+      - name: Create User
+        http:
+          url: "http://${{env.host}}/v1/auth/sign-up"
+          method: POST
+          check:
+            status: /^20/
+          json:
+            firstname: "${{ lorem.word | fake }}"
+            lastname: "${{ lorem.word | fake }}"
+            email: "${{ internet.email | fake }}"
+            password: "12345678"
+            confirmPassword: "12345678"
+          captures:
+            email:
+              jsonpath: $.email
+            id:
+              jsonpath: $._id
+      - name: Login User
+        http:
+          url: "http://${{env.host}}/v1/auth/login"
+          method: POST
+          json:
+            email: ${{ captures.email }}
+            password: "12345678"
+          captures:
+            accessToken:
+              jsonpath: $.token.accessToken
+          check:
+            status: /^20/
+            schema:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+      - name: Get all users
+        http:
+          url: "http://${{env.host}}/v1/users"
+          method: GET
+          auth:
+            bearer:
+              token: ${{captures.accessToken}}
+          check:
+            status: /^20/
+      - name: Edit user
+        http:
+          url: "http://${{env.host}}/v1/users/${{captures.id}}"
+          method: PUT
+          auth:
+            bearer:
+              token: ${{captures.accessToken}}
+          json:
+            firstname: "${{ lorem.word | fake }}"
+            lastname: "${{ lorem.word | fake }}"
+          check:
+            status: /^20/
+      - name: Get by ID
+        http:
+          url: "http://${{env.host}}/v1/users/${{captures.id}}"
+          method: GET
+          auth:
+            bearer:
+              token: ${{captures.accessToken}}
+          check:
+            status: /^20/
+      - name: Delete by ID
+        http:
+          url: "http://${{env.host}}/v1/users/${{captures.id}}"
+          method: DELETE
+          auth:
+            bearer:
+              token: ${{captures.accessToken}}
+          check:
+            status: /^20/
