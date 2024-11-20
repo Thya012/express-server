@@ -20,7 +20,8 @@ const rateLimit = require('express-rate-limit')
 const { RedisStore } = require('rate-limit-redis')
 
 const { createServer } = require('node:http');
-const { join } = require('node:path');
+//const { join } = require('node:path');
+const path = require('node:path');
 const { Server } = require("socket.io");
 const ChatModel = require('./models/chat.js')
 const ChatRouter = require('./routes/chat.js')
@@ -81,10 +82,10 @@ const io = new Server(server, {
     }
 })
 
-
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 // protocol: http, express
 app.get('/', (req, res) => {
-    res.sendFile(join(__dirname, 'index.html'))
+    res.sendFile(path.join(__dirname, '../frontend/dist'))
 })
 app.use('/health-check', (req, res) => {
     return res.status(200).json({ msg: "Up" })
