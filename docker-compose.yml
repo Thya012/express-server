@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./src:/app/src
-      - ./index.js:/app/index.js
+      
       - .env:/app/.env
       - ./uploads:/app/uploads
     
@@ -35,7 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-mongo
-    container_name: mongodb
+    container_name: mymongodb
     ports:
       - "27017:27017"
     volumes:
