@@ -3,7 +3,7 @@ const FileModel = require("../models/file");
 const path = require('path')
 const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3')
 const fs = require('fs')
-
+const { PaginationParameters } = require('mongoose-paginate-v2')
 
 const s3Clinet = new S3Client({
     region: process.env.AWS_REGION,
@@ -14,7 +14,9 @@ const s3Clinet = new S3Client({
 })
 
 const getAllFiles = asyncHandler(async (req, res) => {
-    const files = await FileModel.find()
+    const options = new PaginationParameters(req).get();
+    const files = await FileModel.paginate({},options)
+    //const files = await FileModel.find()
     return res.json(files)
 })
 
@@ -76,7 +78,7 @@ const deleteFileS3 = asyncHandler(async (req, res) => {
      
 
 
-const getFile = asyncHandler(async (req, res) => {
+const getFilebyID = asyncHandler(async (req, res) => {
     const id = req.params.id
     const file = await FileModel.findById(id)
     return res.sendFile(path.join(__dirname, "./../../" + file.path))
@@ -88,7 +90,7 @@ const deleteFile = asyncHandler(async (req, res) => {
     const result = await FileModel.deleteOne({ _id: id })
     return res.json(result)
 })
-module.exports = { handleUpload, getFile
+module.exports = { handleUpload, getFilebyID
     ,deleteFile,
     handleUploads,
     handleS3Upload,

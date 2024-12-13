@@ -135,7 +135,7 @@ const multipleUploads = multer({
 // Check file type
 function checkFileType(file, cb) {
     // Allowed ext
-    const filetypes = /jpeg|jpg|png|gif/
+    const filetypes = /jpeg|jpg|png|gif|pdf/
     // Check ext
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
     // Check mime
@@ -144,12 +144,12 @@ function checkFileType(file, cb) {
     if (mimetype && extname) {
       return cb(null, true)
     } else {
-        cb(new Error('Error: Images Only!"jpeg|jpg|png|gif"'), false)
+        cb(new Error('Error: Images Only!"jpeg|jpg|png|gif|pdf"'), false)
     }
   }
   const verifyRefresh = asyncHandler(async (req, res, next) => {
     const token = req.headers.authorization
-    console.log(token)
+    //console.log(token)
     if (!token) {
         return res.status(401).json({ message: 'Authentication failed' });
     }
@@ -161,11 +161,63 @@ function checkFileType(file, cb) {
     // console.log(req.user)
     next();
 })
+// Middleware to check for required role
+const checkRole = (roleName) => {
+    return async (req, res, next) => {
+        const user = await UserModel.findById(req.user.id).populate('role');
+console.log(user)
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (!user.role) {
+            return res.status(404).json({ message: 'User not have permission' });
+        }
 
-module.exports = { handleError, logger, verifyJWT
+        const role = user.role.title;
+        console.log(role)
+        if (role  === roleName) {
+            next();
+        } else {
+            return res.status(403).json({ message: 'Insufficient role' });
+        }
+    };
+};
+
+// Middleware to check permissions
+const checkPermission = (permissionName) => {
+    return async (req, res, next) => {
+        const user = await UserModel.findById(req.user.id).populate({
+            path: 'role',
+            populate: {
+                path: 'permissions',
+                model: 'Permission',
+            },
+        });
+        console.log(user)
+        if (!user.role) {
+            return res.status(404).json({ message: 'User not have permission' });
+        }
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+       
+        const permissions = user.role.permissions;
+        console.log(permissions)
+        const hasPermission = permissions.some(
+            (perm) => perm.name === permissionName
+        );
+
+        if (hasPermission) {
+            next();
+        } else {
+            return res.status(403).json({ message: 'No permission' });
+        }
+    };
+};module.exports = { handleError, logger, verifyJWT
     , handleValidation, cacheMiddleware,cacheInterceptor,
     invalidateInterceptor,
-    singleUpload,
-    multipleUploads,verifyRefresh
+    singleUpload,checkPermission,
+    multipleUploads,verifyRefresh,checkRole
     
  }

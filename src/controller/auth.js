@@ -52,6 +52,7 @@ const login = asyncHandler(async (req, res) => {
 
     user.refreshToken = hashedToken
     user.save()
+   //localStorage.setItem('user', JSON.stringify(user))
     return res.json({ token })
    
 })

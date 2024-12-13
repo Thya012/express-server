@@ -1,22 +1,22 @@
 const BookModel = require('../models/book')
+
 const asyncHandler = require('express-async-handler')
 const { PaginationParameters } = require('mongoose-paginate-v2')
 
 const getBooks = asyncHandler(async (req, res)=> {
-    // Get all courses 
-    // const { join } = req.query
+   
     // const { limit, page } = req.query
     // const options = {
     //     limit: limit ? limit : -1,
     //     page: page ? page : -1,
     //     pagination: limit ? true : false
     // }
-    // const books = await BookModel.find(
-    //     { page: { $gte: 35, $lte: 15 } })
-    // return res.json(books)
-    // const books = await BookModel.paginate({}, options)
-    const options = new PaginationParameters(req).get()
+    //const options = new PaginationParameters(req).get()
     // console.log(...options)
+    const options = new PaginationParameters(req).get();
+    //console.log(...options)
+    //const books = await BookModel.paginate({},options)
+    //const books = await BookModel.find()
     const books = await BookModel.paginate(...options)
     return res.json(books)
 })

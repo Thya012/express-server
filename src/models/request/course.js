@@ -16,14 +16,14 @@ module.exports = {
     },
     1: {
         query: {
-            title: Joi.string().required(),
-            category: Joi.string().required(),
-           
-            
-            author: Joi.string().required(),
-            price: Joi.number().required(),
+            limit: Joi.number().optional().default(100).description("Number of items to take"),
+            page: Joi.number().optional().default(10),
+            sort: Joi.string().optional(),
+            query: Joi.string().optional(),
+            populate: Joi.string().optional(),
+            select: Joi.string().optional()
         },
-        model: "getAllCourse",
+        model: "getCourses",
         group: 'Coures',
         description: 'Get all courses'
     },
@@ -31,6 +31,7 @@ module.exports = {
         path: {
             id: Joi.string().required()
         },
+        model: "getCourseById",
         group: "Coures", // Swagger tag for apis.
         description: "Get Coures by Id"
     },
@@ -38,6 +39,7 @@ module.exports = {
         path: {
             id: Joi.string().required()
         },
+        model: "deleteCoursebyId",
         group: "Coures", // Swagger tag for apis.
         description: "Delete Coures by Id"
     },
@@ -52,7 +54,7 @@ module.exports = {
             author: Joi.string().optional(),
             page: Joi.number().optional(),
         },
-        model: "updateCoures", // Name of the model
+        model: "updateCourseById", // Name of the model
         group: "Coures", // Swagger tag for apis.
         description: "Update Coures and save details in database"
     }

@@ -1,18 +1,15 @@
 const Joi = require('@hapi/joi')
 module.exports = {
-    // createBook
+    // Create File
     0: {
-        body: {
-            title: Joi.string().required(),
-            genre: Joi.string().required(),
-            description: Joi.string().required(),
-            
-            author: Joi.string().required(),
-            page: Joi.number().required(),
-        },
-        model: "createBook", // Name of the model
-        group: "Book", // Swagger tag for apis.
-        description: "Create book and save details in database"
+        name: "avatar",
+        in: "formData",
+        description: "The avatar of the user",
+        required: true,
+        type: "file",       
+        model: "handleUpload", // Name of the model
+        group: "File", // Swagger tag for apis.
+        description: "Create File and save details in database"
     },
     1: {
         query: {
@@ -23,24 +20,24 @@ module.exports = {
             populate: Joi.string().optional(),
             select: Joi.string().optional()
         },
-        model: "getAllBooks",
-        group: 'Book',
-        description: 'Get all books'
+        model: "getAllFiles",
+        group: 'File',
+        description: 'Get all Files'
     },
     2: {
         path: {
             id: Joi.string().required()
         },
-        model: "getBookByID",
-        group: "Book", // Swagger tag for apis.
-        description: "Get book by Id"
+        model: "getFile",
+        group: "File", // Swagger tag for apis.
+        description: "Get File by Id"
     },
     3: {
         path: {
             id: Joi.string().required()
         },
         model: "deleteBookByID",
-        group: "Book", // Swagger tag for apis.
+        group: "File", // Swagger tag for apis.
         description: "Delete book by Id"
     },
     4: {
@@ -55,7 +52,20 @@ module.exports = {
             page: Joi.number().optional(),
         },
         model: "editBookByID", // Name of the model
-        group: "Book", // Swagger tag for apis.
+        group: "File", // Swagger tag for apis.
         description: "Update book and save details in database"
-    }
+    },  
+    5: {
+        name: "avatar",
+        in: "formData",
+        description: "The avatar of the user",
+        required: true,
+        type: "file",
+  
+    
+       
+        model: "handleUpload", // Name of the model
+        group: "File", // Swagger tag for apis.
+        description: "Create File and save details in S3"
+    },
 }

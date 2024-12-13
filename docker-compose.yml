@@ -3,14 +3,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-nginx
-    container_name: load-balancer
+    container_name: myload-balancer
     depends_on:
       - express
     environment:
       - NGINX_SERVER_NAME=localhost
-      - EXPRESS_HOST_1=first-express-1
-      - EXPRESS_HOST_2=first-express-2
-      - EXPRESS_HOST_3=first-express-3
+      - EXPRESS_HOST_1=first-express-2
+     # - EXPRESS_HOST_2=first-express-2
+     # - EXPRESS_HOST_3=first-express-3
       # - EXPRESS_HOST_4=first-express-4
       # - EXPRESS_HOST_5=first-express-5
       - EXPRESS_PORT=3000
@@ -27,7 +27,7 @@ services:
       - .env:/app/.env
       - ./uploads:/app/uploads
     
-    scale: 3
+    scale: 1
     depends_on:
       - mongodb
       - redis
@@ -35,14 +35,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-mongo
-    container_name: mongodb
+    container_name: mymongodb
     ports:
       - "27017:27017"
     volumes:
       - mongodbdata:/data/db
   redis:
     image: redis:5
-    container_name: cadt-redis
+    container_name: mycadt-redis
     ports:
       - 6379:6379
   redis-commander:

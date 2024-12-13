@@ -1,19 +1,19 @@
-module.exports = {
-    createBook: {
+const { createBook, getBooks } = require("../../controller/books");
 
+module.exports = {
+    
+    createBook: {
         201: {
-            message: {
-                type: 'Successfully created book'
-            }
+            message: 'Successfully created book'
+            
         },
         500: {
             internal: {
-                type: 'Internal server error!'
+                message: 'Internal server error!'
             }
-        },
-
+        }
     },
-    getAllBooks: {
+    getBooks: {
         200: {
             docs: {
                 type: 'array',

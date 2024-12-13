@@ -1,13 +1,12 @@
 module.exports = {
     createCourse: {
         201: {
-            message: {
-                type: 'Successfully created book'
-            }
+            message: 'Successfully created book'
+            
         },
         500: {
             internal: {
-                type: 'Internal server error!'
+                message: 'Internal server error!'
             }
         }
     },

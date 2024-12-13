@@ -20,8 +20,7 @@ const rateLimit = require('express-rate-limit')
 const { RedisStore } = require('rate-limit-redis')
 
 const { createServer } = require('node:http');
-//const { join } = require('node:path');
-const path = require('node:path');
+const { join } = require('node:path');
 const { Server } = require("socket.io");
 const ChatModel = require('./models/chat.js')
 const ChatRouter = require('./routes/chat.js')
@@ -30,7 +29,11 @@ const cors = require('cors')
 
 const { createAdapter } = require("@socket.io/redis-adapter");
 const setupSwagger = require('./swagger/index.js');
-
+const compression = require('compression')
+const timeout = require('connect-timeout')
+const path = require('node:path');
+const RoleRouter = require('./routes/role.js')
+const PermissionRouter = require('./routes/permission.js')
 
 //ssl for host
 // const https = require("https");
@@ -47,6 +50,10 @@ const pubClient = new Redis({
     port: 6379, // Redis port
     host: process.env.CACHE_SERVER, // Redis host
 });
+// compress all responses
+app.use(compression())
+// time out for request 5 second
+app.use(timeout('5s'))
 const subClient = pubClient.duplicate();
 app.use(cors())
 
@@ -82,10 +89,10 @@ const io = new Server(server, {
     }
 })
 
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.use(express.static(path.join(__dirname, 'frontend/dist')))
 // protocol: http, express
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist'))
+    res.sendFile(join(__dirname, 'index.html'))
 })
 app.use('/health-check', (req, res) => {
     return res.status(200).json({ msg: "Up" })
@@ -119,12 +126,14 @@ dbConnect().catch((err) => {
 //connect redis
 //redisClient.connect()
 // Define the rate limit rule
-const limiter = rateLimit({
+const limiter = (ttl, max) => rateLimit({
     store: new RedisStore({
         sendCommand: (...args) => redisClient.sendCommand(args),
     }),
-    windowMs: 1 * 60 * 1000, // 15 minutes
-    max: 30, // Limit each IP to 100 requests per windowMs
+    windowMs: ttl,
+    //1 * 60 * 1000, // 15 minutes
+    max: max,
+    //30, // Limit each IP to 100 requests per windowMs
     message: {msg:'Too many requests from this IP, please try again later.'}
   })
 
@@ -149,8 +158,10 @@ app.use('/v1/auth', authRouter)
 app.use('/v1/chats', ChatRouter)
 //limit log
 //app.use(limiter)
-app.use('/v1/files',passport.authenticate('jwt', { session: false }), fileRouter)
-
+app.use('/v1/files', fileRouter)
+app.use('/v1/books',
+  
+    bookRouter)
 //check authenticate login
 //app.use(passport.authenticate('jwt', { session: false }))
 //Redis Cache
@@ -159,19 +170,38 @@ app.use('/v1/files',passport.authenticate('jwt', { session: false }), fileRouter
 // app.use(invalidateInterceptor)
 
 // Cachable Routes
+
+app.use('/v1/permissions',
+    limiter(1 * 1000 * 60, 60),
+    passport.authenticate('jwt', { session: false }),
+    cacheMiddleware,
+    cacheInterceptor(3 * 60),
+    invalidateInterceptor,
+    PermissionRouter)
+app.use('/v1/roles',
+    limiter(1 * 1000 * 60, 60),
+    passport.authenticate('jwt', { session: false }),
+    cacheMiddleware,
+    cacheInterceptor(3 * 60),
+    invalidateInterceptor,
+    RoleRouter)
+
 app.use('/v1/courses',
+    limiter(1 * 1000 * 60, 60),
     passport.authenticate('jwt', { session: false }),
     cacheMiddleware,
     cacheInterceptor(3 * 60),
     invalidateInterceptor,
     courseRouter)
-app.use('/v1/books',
-    passport.authenticate('jwt', { session: false }),
-    cacheMiddleware,
-    cacheInterceptor(3 * 60),
-    invalidateInterceptor,
-    bookRouter)
+// app.use('/v1/books',
+//     limiter(1 * 1000 * 60, 60),
+//     passport.authenticate('jwt', { session: false }),
+//     cacheMiddleware,
+//     cacheInterceptor(3 * 60),
+//     invalidateInterceptor,
+//     bookRouter)
 app.use('/v1/users',
+    limiter(1 * 1000 * 60, 30),
     passport.authenticate('jwt', { session: false }),
     cacheMiddleware,
     cacheInterceptor(3 * 60),

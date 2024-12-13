@@ -1,17 +1,38 @@
 
 const asyncHandler = require('express-async-handler')
 const UserModel = require('../models/user.js')
-
+const Role = require('../models/role.js')
+const bcrypt = require('bcrypt')
 /**
  * Controller is a specific function to handle specific tasks
  */
 
 const createUser = asyncHandler(async (req, res) => {
     
-    const user = new UserModel(req.body)
+    const { firstname, lastname, email, password, confirmPassword, role } = req.body
+    if (password !== confirmPassword) {
+        throw new Error("Password not matched!")
+    }
+    const userRole = await Role.findOne({ name: role });
+    if (!userRole) {
+        return res.status(400).json({ message: 'Role not found' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const username = Date.now() + firstname
+
+    const user = new UserModel({
+        username: username,
+        firstname: firstname,
+        lastname: lastname,
+        email: email,
+        password: hashedPassword,
+        role: userRole._id
+    })
+
     const result = await user.save()
-     //clear cache
-  
+    //console.log(typeof (result))
+    result.password = ''
     return res.json(result)
       
 

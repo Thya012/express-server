@@ -21,8 +21,12 @@ const options = {
         }
     },
     security: [{ Bearer: [] }],
-    defaultSecurity: 'Bearer'
+    defaultSecurity: 'Bearer',
+
+
+    
 }
+
 /**
  * serveSwagger must be called after defining your router.
  * @param app Express object

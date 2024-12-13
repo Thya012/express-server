@@ -5,7 +5,7 @@ const courseSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     title: { type: String, required: true },
     category: { type: String, required: true },
-    author: { type: String, required: true },
+    author: { type: mongoose.Types.ObjectId, ref: 'Users' },
     createdDate: { type: Date, required: true, default: new Date() },
 })
 courseSchema.plugin(mongoosePaginate)
