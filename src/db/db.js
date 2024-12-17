@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dbName = process.env.DB_NAME
-const dbCotainer = 'mongodb'
+const dbCotainer = 'mymongodb'
 // MongoDB connection URI
 const mongoURI = `mongodb://${dbCotainer}:27017`;
 

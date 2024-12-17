@@ -8,7 +8,7 @@ const bookSchema = new mongoose.Schema({
     page: { type: Number, required: true },
     description: { type: String, required: true , index: true},
     createdDate: { type: Date, required: true, default: Date.now() },
-    covers: [{ type: mongoose.Types.ObjectId, ref: 'Files' }]
+    // covers: [{ type: mongoose.Types.ObjectId, ref: 'Files' }]
 })
 bookSchema.index(
     {
