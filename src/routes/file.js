@@ -7,10 +7,10 @@ const { singleUpload, multipleUploads } = require('../middlewares')
 const {uploadS3, multipleuploadS3} = require('../middlewares/uploadS3')
 const fileRouter = express.Router()
 const { validation } = require('swagger-generator-express');
-//const requestModel = require('../models/request/file')
+const requestModel = require('../models/request/file')
 //Router Mongo
 
-fileRouter.post('/upload-single', singleUpload, handleUpload)
+fileRouter.post('/upload-single', validation(requestModel[0]), singleUpload, handleUpload)
 fileRouter.get('/', getAllFiles)
 fileRouter.get('/:id', getFilebyID)
 fileRouter.delete('/:id', deleteFile)

@@ -1,0 +1,25 @@
+name: Deploy to VM
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 62.146.177.21
+          username: root
+          key: ${{ secrets.SSH_VPS_KEY }}
+          port: 22
+          script: |
+            . ~/.nvm/nvm.sh
+            whoami
+            pwd
+            ls
+            cd DevOps
+            git pull
+            pm2 restart dev
