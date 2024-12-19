@@ -13,7 +13,7 @@ jobs:
         with:
           host: 62.146.177.21
           username: root
-          key: ${{ secrets.SSH_VPS_KEY }}
+          key: ${{ secrets.SSH_CONTABO_KEY }}
           port: 22
           script: |
             . ~/.nvm/nvm.sh
