@@ -21,6 +21,6 @@ jobs:
             pwd
             ls
             cd 
-            cd express-server
+            cd app
             git pull
             pm2 restart dev
