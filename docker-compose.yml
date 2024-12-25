@@ -1,9 +1,15 @@
 services:
+  networks:
+    express-network:
+      name: express-network
+      external: true
   nginx:
     build:
       context: .
       dockerfile: Dockerfile-nginx
     container_name: myload-balancer
+    networks:
+      - express-network
     depends_on:
       - express
     environment:
