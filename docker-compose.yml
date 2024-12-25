@@ -15,8 +15,8 @@ services:
     environment:
       - NGINX_SERVER_NAME=localhost
       - EXPRESS_HOST_1=first-express-3
-     # - EXPRESS_HOST_2=first-express-2
-     # - EXPRESS_HOST_3=first-express-3
+      # - EXPRESS_HOST_2=first-express-2
+      # - EXPRESS_HOST_3=first-express-3
       # - EXPRESS_HOST_4=first-express-4
       # - EXPRESS_HOST_5=first-express-5
       - EXPRESS_PORT=3000
@@ -29,10 +29,10 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./src:/app/src
-      
+
       - .env:/app/.env
       - ./uploads:/app/uploads
-    
+
     scale: 1
     depends_on:
       - mongodb
